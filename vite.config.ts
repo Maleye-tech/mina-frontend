@@ -1,36 +1,58 @@
-import { defineConfig } from 'vite'
-import react from '@vitejs/plugin-react'
-import tailwindcss from '@tailwindcss/vite'
-import { VitePWA } from 'vite-plugin-pwa'
-import { fileURLToPath, URL } from 'node:url'
+import { defineConfig } from "vite";
+import react from "@vitejs/plugin-react";
+import tailwindcss from "@tailwindcss/vite";
+import { VitePWA } from "vite-plugin-pwa";
+import path from "node:path";
 
+// Vite config — https://vitejs.dev/config/
 export default defineConfig({
+  base: "/",
   plugins: [
     react(),
     tailwindcss(),
     VitePWA({
-      registerType: 'autoUpdate',
+      registerType: "autoUpdate",
+      includeAssets: ["favicon.png"],
       manifest: {
-        name: 'Mina',
-        short_name: 'Mina',
-        description: "Le compagnon d'études et d'accompagnement des étudiants en santé",
-        theme_color: '#0f766e',
-        background_color: '#ffffff',
-        display: 'standalone',
-        start_url: '/',
+        name: "Mina — Études & bien-être",
+        short_name: "Mina",
+        description: "Le compagnon d’études et de bien-être des étudiants en santé.",
+        theme_color: "#0f766e",
+        background_color: "#fafaf7",
+        display: "standalone",
+        start_url: "/",
+        lang: "fr",
         icons: [
-          { src: '/pwa-192x192.png', sizes: '192x192', type: 'image/png' },
-          { src: '/pwa-512x512.png', sizes: '512x512', type: 'image/png' },
+          { src: "/favicon.png", sizes: "192x192", type: "image/png" },
+          { src: "/favicon.png", sizes: "512x512", type: "image/png" },
         ],
       },
       workbox: {
-        globPatterns: ['**/*.{js,css,html,ico,png,svg,woff2}'],
+        globPatterns: ["**/*.{js,css,html,png,svg,woff2}"],
+        runtimeCaching: [
+          {
+            urlPattern: ({ request }) => request.destination === "document",
+            handler: "NetworkFirst",
+            options: { cacheName: "mina-pages", networkTimeoutSeconds: 3 },
+          },
+          {
+            urlPattern: /\/cours\//,
+            handler: "CacheFirst",
+            options: {
+              cacheName: "mina-courses",
+              expiration: { maxEntries: 80, maxAgeSeconds: 2592000 },
+            },
+          },
+        ],
       },
     }),
   ],
   resolve: {
     alias: {
-      '@': fileURLToPath(new URL('./src', import.meta.url)),
+      "@": path.resolve(__dirname, "./src"),
     },
   },
-})
+  server: {
+    port: 5173,
+  },
+});

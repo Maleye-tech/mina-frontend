@@ -1,1 +1,85 @@
+@import url("https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap");
 @import "tailwindcss";
+
+@theme {
+  --color-mina: #0f766e;
+  --color-mina-dark: #0b5f59;
+  --color-ink: #0b2545;
+  --color-sun: #f5a524;
+  --color-care: #7c6fdb;
+  --color-care-dark: #6558c7;
+  --color-canvas: #fafaf7;
+  --color-panel: #121b2b;
+  --color-line: #e7e9e5;
+  --font-sans: "Plus Jakarta Sans", ui-sans-serif, system-ui, sans-serif;
+  --shadow-card: 0 12px 40px rgba(11, 37, 69, 0.07);
+}
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+  body {
+    background: #fafaf7;
+    color: #0b2545;
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+  }
+  .dark body {
+    background: #09111f;
+    color: #f8fafc;
+  }
+  button,
+  a {
+    -webkit-tap-highlight-color: transparent;
+  }
+  ::selection {
+    background: rgba(15, 118, 110, 0.18);
+  }
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+  .glass {
+    background: rgba(250, 250, 247, 0.84);
+    backdrop-filter: blur(18px);
+  }
+  .dark .glass {
+    background: rgba(9, 17, 31, 0.84);
+  }
+  .pattern {
+    background-image:
+      linear-gradient(
+        30deg,
+        rgba(15, 118, 110, 0.06) 12%,
+        transparent 12.5%,
+        transparent 87%,
+        rgba(15, 118, 110, 0.06) 87.5%,
+        rgba(15, 118, 110, 0.06)
+      ),
+      linear-gradient(
+        150deg,
+        rgba(245, 165, 36, 0.05) 12%,
+        transparent 12.5%,
+        transparent 87%,
+        rgba(245, 165, 36, 0.05) 87.5%,
+        rgba(245, 165, 36, 0.05)
+      );
+    background-size: 56px 98px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
