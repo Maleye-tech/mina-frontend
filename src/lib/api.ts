@@ -1,6 +1,8 @@
 import { clearToken, getToken } from "./tokenStore";
 
-const BASE_URL = (import.meta.env.VITE_API_URL ?? "/api").replace(/\/+$/, "");
+const BASE_URL = (
+  import.meta.env.PROD ? "/api" : (import.meta.env.VITE_API_URL ?? "/api")
+).replace(/\/+$/, "");
 
 export class ApiError extends Error {
   status: number;
