@@ -1,5 +1,5 @@
 import type { ReactNode } from "react";
-import { ArrowDownToLine, ArrowUpRight, Clock3, MoreHorizontal } from "lucide-react";
+import { Clock3 } from "lucide-react";
 import { Badge, Card } from "../ui/Primitives";
 
 export function PageHeader({
@@ -112,17 +112,5 @@ export function ActivityItem({
         {status}
       </Badge>
     </div>
-  );
-}
-
-export function DownloadButton({ label = "Exporter" }: { label?: string }) {
-  return (
-    <button
-      onClick={() => alert(`${label} simulé avec succès.`)}
-      className="inline-flex items-center gap-2 rounded-xl border border-line bg-white px-4 py-2.5 text-xs font-bold hover:border-mina dark:border-white/10 dark:bg-panel"
-    >
-      <ArrowDownToLine size={15} />
-      {label}
-    </button>
   );
 }

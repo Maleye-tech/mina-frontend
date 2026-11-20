@@ -52,11 +52,28 @@ export const roleTitles: Record<Exclude<Role, "student">, Record<string, [string
       "Validations en attente",
       "Vérifie les professionnels, ambassadeurs et partenaires.",
     ],
-    contenus: ["Gestion des contenus", "Administre cours, QCM, flashcards et cas cliniques."],
-    paiements: ["Abonnements & paiements", "Suis les revenus et les transactions simulées."],
+    contenus: [
+      "Gestion des contenus",
+      "Administre les cours, fiches, résumés et podcasts de la bibliothèque.",
+    ],
+    "imports-qcm": [
+      "Imports de questions QCM",
+      "Importe des banques de questions depuis un fichier CSV et suis leur traitement.",
+    ],
+    "questions-qcm": [
+      "Banque de questions QCM",
+      "Parcours et inspecte les questions publiées, leur niveau et leurs options.",
+    ],
+    paiements: [
+      "Abonnements & paiements",
+      "Suis les revenus et les transactions de la plateforme.",
+    ],
     partenaires: ["Partenaires & conventions", "Déploie Mina auprès des institutions."],
     moderation: ["Modération", "Traite les signalements avec une traçabilité stricte."],
     journaux: ["Journaux d’activité", "Surveille les opérations sensibles de la plateforme."],
-    parametres: ["Paramètres plateforme", "Configure les règles et services globaux."],
+    parametres: [
+      "Questions d’onboarding",
+      "Configure les questions du profil étudiant posées lors de la première connexion.",
+    ],
   },
 };

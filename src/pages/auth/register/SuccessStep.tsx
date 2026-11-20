@@ -1,13 +1,7 @@
 import { Check } from "lucide-react";
 import type { Role } from "../../../types";
 
-export function SuccessStep({
-  name,
-  role,
-}: {
-  name: string;
-  role: Exclude<Role, "super_admin">;
-}) {
+export function SuccessStep({ name, role }: { name: string; role: Role }) {
   return (
     <div className="py-10 text-center">
       <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-teal-50 text-mina dark:bg-mina/10">
@@ -19,7 +13,10 @@ export function SuccessStep({
           ? "Ton espace est prêt. Nous préparons ton tableau de bord."
           : "Ta demande a bien été reçue. Ton compte est en attente de validation."}
       </p>
-      <p className="mt-6 text-xs font-bold text-mina">Redirection en cours…</p>
+      <p className="mt-6 text-xs font-bold text-mina">
+        Vérifie ton adresse e-mail pour activer toutes les fonctions.
+      </p>
+      <p className="mt-3 text-xs font-bold text-mina">Redirection en cours…</p>
     </div>
   );
 }

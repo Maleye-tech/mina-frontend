@@ -1,6 +1,5 @@
 import { CheckCircle2, CloudOff, Download, WifiOff } from "lucide-react";
 import { Badge } from "../../../components/ui/Primitives";
-import { SectionTitle } from "../../../components/landing/SectionTitle";
 
 const FEATURES = ["Installable", "Faible consommation", "Sync automatique"];
 

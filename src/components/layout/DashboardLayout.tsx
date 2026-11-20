@@ -26,6 +26,7 @@ import {
   Sun,
   UserRound,
   Users,
+  Upload,
   Wifi,
   WifiOff,
   X,
@@ -33,7 +34,6 @@ import {
   BriefcaseBusiness,
 } from "lucide-react";
 import { Logo } from "../ui/Logo";
-import { Badge } from "../ui/Primitives";
 import { useAuthStore } from "../../store/authStore";
 import { useThemeStore } from "../../store/themeStore";
 import { useOnlineStatus } from "../../hooks/useOnlineStatus";
@@ -72,6 +72,7 @@ const icons = {
   moderation: CircleHelp,
   logs: FileBarChart,
   settings: Settings,
+  imports: Upload,
 };
 
 const navByRole: Record<Role, { label: string; path: string; icon: keyof typeof icons }[]> = {
@@ -118,6 +119,8 @@ const navByRole: Record<Role, { label: string; path: string; icon: keyof typeof 
     { label: "Utilisateurs", path: "/app/admin/utilisateurs", icon: "users" },
     { label: "Validations", path: "/app/admin/validations", icon: "validations" },
     { label: "Contenus", path: "/app/admin/contenus", icon: "content" },
+    { label: "Banque QCM", path: "/app/admin/questions-qcm", icon: "qcm" },
+    { label: "Imports QCM", path: "/app/admin/imports-qcm", icon: "imports" },
     { label: "Paiements", path: "/app/admin/paiements", icon: "payments" },
     { label: "Partenaires", path: "/app/admin/partenaires", icon: "partners" },
     { label: "Modération", path: "/app/admin/moderation", icon: "moderation" },
@@ -140,7 +143,7 @@ export function DashboardLayout() {
     document.documentElement.classList.toggle("dark", dark);
   }, [dark]);
   const signout = () => {
-    logout();
+    void logout();
     navigate("/login");
   };
   return (

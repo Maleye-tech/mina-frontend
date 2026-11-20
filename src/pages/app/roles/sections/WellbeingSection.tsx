@@ -1,7 +1,7 @@
-import { HeartHandshake, LockKeyhole, Stethoscope, Users } from "lucide-react";
+import { LockKeyhole, TrendingUp } from "lucide-react";
 import { Badge } from "../../../../components/ui/Primitives";
-import { ChartCard } from "../../../../components/dashboard/ChartCard";
-import { PageHeader, StatCard } from "../../../../components/dashboard/Common";
+import { PageHeader } from "../../../../components/dashboard/Common";
+import { EmptyState } from "../../../../components/ui/EmptyState";
 
 export function WellbeingSection({ title, desc }: { title: string; desc: string }) {
   return (
@@ -17,24 +17,11 @@ export function WellbeingSection({ title, desc }: { title: string; desc: string 
           </Badge>
         }
       />
-      <div className="grid gap-5 md:grid-cols-3">
-        <StatCard
-          label="Indice de bien-être"
-          value="7,2 / 10"
-          delta="+0,4"
-          icon={<HeartHandshake size={20} />}
-        />
-        <StatCard label="Participation" value="684" delta="52 %" icon={<Users size={20} />} />
-        <StatCard
-          label="Orientation Care"
-          value="18 %"
-          delta="-2 pts"
-          icon={<Stethoscope size={20} />}
-        />
-      </div>
-      <div className="mt-5">
-        <ChartCard care title="Évolution de l’indice collectif" />
-      </div>
+      <EmptyState
+        icon={<TrendingUp size={24} />}
+        title="Aucune donnée agrégée"
+        description="L’indice de bien-être et la participation seront chargés depuis l’API Mina dès que son endpoint sera disponible."
+      />
     </>
   );
 }

@@ -6,9 +6,9 @@ import type { Role } from "../../../types";
 export type RegisterData = {
   name: string;
   email: string;
-  institution: string;
-  level: string;
   password: string;
+  passwordConfirmation: string;
+  consentPersonalData: boolean;
 };
 
 export function BackButton({ onClick }: { onClick: () => void }) {
@@ -54,19 +54,11 @@ export function IdentityStep({
           onChange={(v) => onChange({ ...data, email: v })}
           placeholder="toi@universite.sn"
         />
-        <Field
-          label={role === "professional" ? "Spécialité" : role === "partner_admin" ? "Institution" : "Université"}
-          value={data.institution}
-          onChange={(v) => onChange({ ...data, institution: v })}
-        />
-        <Field
-          label={
-            role === "professional" ? "Numéro d’ordre" : role === "student" ? "Niveau" : "Fonction"
-          }
-          value={data.level}
-          onChange={(v) => onChange({ ...data, level: v })}
-        />
       </div>
+      <p className="mt-5 text-xs leading-5 text-slate-500">
+        Ton profil étudiant (niveau, université, faculté) sera complété juste après la création de
+        ton compte.
+      </p>
       {role !== "student" && (
         <div className="mt-5 rounded-xl bg-amber-50 p-4 text-xs text-amber-800 dark:bg-amber-500/10 dark:text-amber-300">
           <ShieldCheck className="mr-2 inline" size={16} />

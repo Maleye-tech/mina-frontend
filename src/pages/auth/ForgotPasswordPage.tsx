@@ -4,15 +4,26 @@ import { ArrowLeft, LockKeyhole } from "lucide-react";
 import { Logo } from "../../components/ui/Logo";
 import { Button } from "../../components/ui/Primitives";
 import { Field } from "../../components/auth/Field";
+import { ApiError } from "../../lib/api";
 import { authService } from "../../services/authService";
 
 export function ForgotPasswordPage() {
   const [sent, setSent] = useState(false);
   const [value, setValue] = useState("");
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
   const submit = async (e: FormEvent) => {
     e.preventDefault();
-    await authService.requestPasswordReset(value);
-    setSent(true);
+    setError("");
+    setLoading(true);
+    try {
+      await authService.forgotPassword(value);
+      setSent(true);
+    } catch (err) {
+      setError(err instanceof ApiError ? err.message : (err as Error).message);
+    } finally {
+      setLoading(false);
+    }
   };
   return (
     <div className="flex min-h-screen items-center justify-center bg-canvas px-5 dark:bg-[#09111f]">
@@ -30,12 +41,19 @@ export function ForgotPasswordPage() {
         ) : (
           <form onSubmit={submit}>
             <p className="mt-2 text-sm leading-6 text-slate-500">
-              Entre ton email ou ton numéro de téléphone. Nous t’enverrons un lien sécurisé.
+              Entre ton adresse email. Nous t’enverrons un lien sécurisé.
             </p>
             <div className="mt-6">
-              <Field label="Email ou téléphone" value={value} onChange={setValue} />
+              <Field label="Email" value={value} onChange={setValue} />
             </div>
-            <Button className="mt-5 w-full">Envoyer le lien</Button>
+            {error && (
+              <div className="mt-4 rounded-xl bg-red-50 p-3 text-xs font-bold text-red-600 dark:bg-red-500/10">
+                {error}
+              </div>
+            )}
+            <Button loading={loading} className="mt-5 w-full">
+              Envoyer le lien
+            </Button>
           </form>
         )}
         <Link

@@ -1,7 +1,6 @@
 import type { ReactNode } from "react";
 import type { Role } from "../../../types";
-import { Button } from "../../../components/ui/Primitives";
-import { DownloadButton, PageHeader } from "../../../components/dashboard/Common";
+import { PageHeader } from "../../../components/dashboard/Common";
 import { roleTitles } from "./roleTitles";
 import { RoleOverview } from "./RoleOverview";
 import { ContentsSection } from "./sections/ContentsSection";
@@ -9,8 +8,11 @@ import { FallbackSection } from "./sections/FallbackSection";
 import { FormationSection } from "./sections/FormationSection";
 import { LicencesSection } from "./sections/LicencesSection";
 import { PriorityQueueSection } from "./sections/PriorityQueueSection";
+import { QcmImportsSection } from "./sections/QcmImportsSection";
+import { QcmQuestionsSection } from "./sections/QcmQuestionsSection";
 import { UsersSection } from "./sections/UsersSection";
 import { WellbeingSection } from "./sections/WellbeingSection";
+import { OnboardingQuestionsSection } from "./sections/OnboardingQuestionsSection";
 
 type NonStudentRole = Exclude<Role, "student">;
 
@@ -28,12 +30,7 @@ export function GenericRoleSection({ role, slug }: { role: NonStudentRole; slug:
   if (!slug)
     return (
       <>
-        <PageHeader
-          eyebrow={roleEyebrow(role)}
-          title={title}
-          description={desc}
-          action={<DownloadButton label="Exporter le rapport" />}
-        />
+        <PageHeader eyebrow={roleEyebrow(role)} title={title} description={desc} />
         <RoleOverview role={role} />
       </>
     );
@@ -41,9 +38,12 @@ export function GenericRoleSection({ role, slug }: { role: NonStudentRole; slug:
   const sections: Record<string, ReactNode> = {
     utilisateurs: <UsersSection title={title} desc={desc} />,
     contenus: <ContentsSection title={title} desc={desc} />,
+    "imports-qcm": <QcmImportsSection title={title} desc={desc} />,
+    "questions-qcm": <QcmQuestionsSection title={title} desc={desc} />,
     licences: <LicencesSection title={title} desc={desc} />,
     "bien-etre": <WellbeingSection title={title} desc={desc} />,
     formation: <FormationSection title={title} desc={desc} />,
+    parametres: <OnboardingQuestionsSection title={title} desc={desc} />,
   };
 
   if (sections[slug]) return <>{sections[slug]}</>;

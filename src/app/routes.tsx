@@ -34,6 +34,18 @@ export const router = createBrowserRouter([
     lazy: async () => ({ Component: (await import("../pages/auth/AuthPages")).ForgotPasswordPage }),
   },
   {
+    path: "reset-password",
+    lazy: async () => ({ Component: (await import("../pages/auth/AuthPages")).ResetPasswordPage }),
+  },
+  {
+    path: "verify-email/:id/:hash",
+    lazy: async () => ({ Component: (await import("../pages/auth/AuthPages")).VerifyEmailPage }),
+  },
+  {
+    path: "two-factor",
+    lazy: async () => ({ Component: (await import("../pages/auth/AuthPages")).TwoFactorPage }),
+  },
+  {
     path: "app",
     Component: ProtectedRoute,
     children: [
@@ -43,6 +55,12 @@ export const router = createBrowserRouter([
           {
             element: <RoleGuard role="student" />,
             children: [
+              {
+                path: "student/onboarding",
+                lazy: async () => ({
+                  Component: (await import("../pages/app/student/OnboardingPage")).OnboardingPage,
+                }),
+              },
               {
                 path: "student/*",
                 lazy: async () => ({

@@ -1,5 +1,4 @@
 import { ShieldCheck } from "lucide-react";
-import { SectionTitle } from "../../../components/landing/SectionTitle";
 
 const GUARANTEES = [
   ["E2E", "Chiffrement de bout en bout"],

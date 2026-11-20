@@ -1,9 +1,11 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router";
 import { Logo } from "../../components/ui/Logo";
-import { roleMeta } from "../../data/mocks";
+import { roleMeta } from "../../data/roleMeta";
+import { ApiError } from "../../lib/api";
+import { authService } from "../../services/authService";
 import { useAuthStore } from "../../store/authStore";
-import type { Role } from "../../types";
+import type { Role, User } from "../../types";
 import { RegisterStepper } from "./register/RegisterStepper";
 import { RoleStep } from "./register/RoleStep";
 import { IdentityStep, type RegisterData } from "./register/IdentityStep";
@@ -13,29 +15,56 @@ import { SuccessStep } from "./register/SuccessStep";
 const INITIAL_DATA: RegisterData = {
   name: "",
   email: "",
-  institution: "UCAD",
-  level: "L1",
   password: "",
+  passwordConfirmation: "",
+  consentPersonalData: true,
 };
 
 export function RegisterPage() {
   const [step, setStep] = useState(1);
   const [role, setRole] = useState<Exclude<Role, "super_admin">>("student");
   const [data, setData] = useState<RegisterData>(INITIAL_DATA);
-  const registerUser = useAuthStore((s) => s.register);
+  const [error, setError] = useState("");
+  const [submitting, setSubmitting] = useState(false);
+  const [created, setCreated] = useState<User | null>(null);
+  const register = useAuthStore((s) => s.register);
+  const setUser = useAuthStore((s) => s.setUser);
   const navigate = useNavigate();
   const next = () => setStep(Math.min(4, step + 1));
-  const finish = () => {
-    const user = {
-      name: data.name || "Nouveau membre",
-      email: data.email,
-      role,
-      university: data.institution,
-      status: role === "student" ? ("active" as const) : ("pending" as const),
-    };
-    registerUser(user);
-    setStep(4);
-    setTimeout(() => navigate(roleMeta[role].home), 1200);
+  const finish = async () => {
+    setError("");
+    setSubmitting(true);
+    try {
+      let user = await register({
+        name: data.name,
+        email: data.email,
+        password: data.password,
+        passwordConfirmation: data.passwordConfirmation,
+      });
+      if (data.consentPersonalData) {
+        try {
+          user = await authService.updateSettings({ consents: { personal_data: true } });
+          setUser(user);
+        } catch {
+          // le consentement sera rappelé à l'onboarding s'il n'a pas pu être enregistré
+        }
+      }
+      setCreated(user);
+      setStep(4);
+      setTimeout(() => navigate(roleMeta[user.role].home), 1600);
+    } catch (e) {
+      if (e instanceof ApiError && e.fieldErrors) {
+        const messages = Object.entries(e.fieldErrors)
+          .map(([field, message]) => `${field} : ${message}`)
+          .join(" · ");
+        setError(messages || e.message);
+      } else {
+        setError((e as Error).message);
+      }
+      setStep(3);
+    } finally {
+      setSubmitting(false);
+    }
   };
   return (
     <div className="min-h-screen bg-canvas px-5 py-8 dark:bg-[#09111f]">
@@ -65,9 +94,11 @@ export function RegisterPage() {
                 onChange={setData}
                 onFinish={finish}
                 onBack={() => setStep(2)}
+                error={error}
+                loading={submitting}
               />
             )}
-            {step === 4 && <SuccessStep name={data.name} role={role} />}
+            {step === 4 && <SuccessStep name={data.name} role={created?.role ?? role} />}
           </div>
         </div>
       </div>

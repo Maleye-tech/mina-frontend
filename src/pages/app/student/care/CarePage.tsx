@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { AlertTriangle } from "lucide-react";
+import { AlertTriangle, Phone } from "lucide-react";
 import { CareHome } from "./CareHome";
 import { CareBooking } from "./CareBooking";
 import { CareChat } from "./CareChat";
@@ -7,16 +7,26 @@ import { CareResources } from "./CareResources";
 import { CareSelfTest } from "./CareSelfTest";
 import { CareEvents } from "./CareEvents";
 
-const TABS = ["Accueil", "Prendre RDV", "Tchat sécurisé", "Ressources", "Auto-évaluation", "Événements"];
+const TABS = [
+  "Accueil",
+  "Prendre RDV",
+  "Tchat sécurisé",
+  "Ressources",
+  "Auto-évaluation",
+  "Événements",
+];
 
-function CareHeader() {
+function CareHeader({ onSos }: { onSos: () => void }) {
   return (
     <div className="mb-5 flex flex-wrap items-center justify-between gap-3">
       <div>
         <p className="text-[10px] font-extrabold uppercase tracking-[.2em] text-care">Mina Care</p>
         <h1 className="mt-1 text-2xl font-extrabold">Ton espace bien-être</h1>
       </div>
-      <button className="rounded-xl bg-red-600 px-4 py-2.5 text-xs font-extrabold text-white shadow-lg">
+      <button
+        onClick={onSos}
+        className="min-h-11 rounded-xl bg-red-600 px-4 py-2.5 text-xs font-extrabold text-white shadow-lg transition hover:bg-red-700"
+      >
         <AlertTriangle className="mr-1.5 inline" size={15} />
         SOS · Aide immédiate
       </button>
@@ -24,13 +34,7 @@ function CareHeader() {
   );
 }
 
-function CareTabs({
-  tab,
-  onSelect,
-}: {
-  tab: string;
-  onSelect: (tab: string) => void;
-}) {
+function CareTabs({ tab, onSelect }: { tab: string; onSelect: (tab: string) => void }) {
   return (
     <div className="mb-6 flex gap-2 overflow-x-auto pb-2">
       {TABS.map((t) => (
@@ -50,7 +54,7 @@ export function CarePage() {
   const [tab, setTab] = useState("Accueil");
   return (
     <div className="-m-4 min-h-[calc(100vh-72px)] bg-[#f5f3ff] p-4 dark:bg-care/5 md:-m-7 md:p-7">
-      <CareHeader />
+      <CareHeader onSos={() => setTab("Accueil")} />
       <CareTabs tab={tab} onSelect={setTab} />
       {tab === "Accueil" && <CareHome onOpenChat={() => setTab("Tchat sécurisé")} />}
       {tab === "Prendre RDV" && <CareBooking />}
@@ -58,10 +62,19 @@ export function CarePage() {
       {tab === "Ressources" && <CareResources />}
       {tab === "Auto-évaluation" && <CareSelfTest />}
       {tab === "Événements" && <CareEvents />}
-      <div className="mt-6 rounded-xl border border-red-200 bg-white p-4 text-xs leading-5 text-red-700 dark:border-red-400/20 dark:bg-panel dark:text-red-300">
-        <AlertTriangle className="mr-2 inline" size={15} />
-        <strong>En cas de détresse immédiate,</strong> contacte les urgences ou une personne de
-        confiance. Les numéros nationaux seront configurés avec les partenaires.
+      <div className="mt-6 flex flex-wrap items-center justify-between gap-3 rounded-xl border border-red-200 bg-white p-4 text-xs leading-5 text-red-700 dark:border-red-400/20 dark:bg-panel dark:text-red-300">
+        <span>
+          <AlertTriangle className="mr-2 inline" size={15} />
+          <strong>En cas de détresse immédiate,</strong> appelle les contacts d’urgence listés sur
+          l’accueil Mina Care ou une personne de confiance.
+        </span>
+        <button
+          onClick={() => setTab("Accueil")}
+          className="inline-flex min-h-9 items-center gap-1.5 rounded-lg bg-red-600 px-3 py-1.5 font-extrabold text-white transition hover:bg-red-700"
+        >
+          <Phone size={13} />
+          Voir les numéros
+        </button>
       </div>
     </div>
   );

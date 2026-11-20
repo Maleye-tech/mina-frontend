@@ -7,13 +7,13 @@ import { ArrowRight, Eye, EyeOff, LockKeyhole, Mail } from "lucide-react";
 import { Logo } from "../../components/ui/Logo";
 import { Badge, Button } from "../../components/ui/Primitives";
 import { AuthVisual } from "../../components/auth/AuthVisual";
-import { DemoAccounts } from "../../components/auth/DemoAccounts";
-import { roleMeta } from "../../data/mocks";
+import { roleMeta } from "../../data/roleMeta";
+import { ApiError } from "../../lib/api";
 import { useAuthStore } from "../../store/authStore";
-import type { Role } from "../../types";
+import type { User } from "../../types";
 
 const loginSchema = z.object({
-  email: z.string().min(3, "Saisis ton email ou téléphone."),
+  email: z.string().min(3, "Saisis ton email."),
   password: z.string().min(6, "Le mot de passe contient au moins 6 caractères."),
 });
 type LoginForm = z.infer<typeof loginSchema>;
@@ -53,26 +53,41 @@ function PasswordInput({
 export function LoginPage() {
   const navigate = useNavigate();
   const location = useLocation();
-  const { login, quickLogin } = useAuthStore();
+  const login = useAuthStore((s) => s.login);
   const [serverError, setServerError] = useState("");
   const {
     register,
     handleSubmit,
+    setError,
     formState: { errors, isSubmitting },
   } = useForm<LoginForm>({
     resolver: zodResolver(loginSchema),
-    defaultValues: { email: "etudiant@mina.sn", password: "demo123" },
   });
-  const go = (user: { role: Role }) => {
+  const go = (user: User) => {
     const redirect = new URLSearchParams(location.search).get("redirect");
     navigate(redirect?.startsWith("/app") ? redirect : roleMeta[user.role].home);
   };
   const submit = async (data: LoginForm) => {
+    setServerError("");
     try {
-      setServerError("");
-      go(await login(data.email, data.password));
+      const result = await login(data.email, data.password);
+      if (result.type === "two_factor") {
+        navigate("/two-factor");
+        return;
+      }
+      go(result.user);
     } catch (e) {
-      setServerError((e as Error).message);
+      if (e instanceof ApiError && e.fieldErrors) {
+        const fields = Object.keys(e.fieldErrors);
+        for (const field of fields) {
+          if (field === "email" || field === "password")
+            setError(field, { message: e.fieldErrors[field] });
+        }
+        if (!fields.includes("email") && !fields.includes("password")) setServerError(e.message);
+        else if (fields.length > 1) setServerError(e.message);
+      } else {
+        setServerError((e as Error).message);
+      }
     }
   };
   return (
@@ -87,11 +102,13 @@ export function LoginPage() {
           </div>
           <form onSubmit={handleSubmit(submit)} className="mt-8 space-y-5">
             <label className="block text-sm font-bold">
-              Email ou téléphone
+              Email
               <div className="relative mt-2">
                 <Mail className="absolute left-4 top-3.5 text-slate-400" size={18} />
                 <input
                   {...register("email")}
+                  type="email"
+                  autoComplete="email"
                   className="h-12 w-full rounded-xl border border-line bg-white pl-11 pr-4 outline-none focus:border-mina focus:ring-3 focus:ring-mina/10 dark:border-white/10 dark:bg-panel"
                   placeholder="toi@universite.sn"
                 />
@@ -101,11 +118,7 @@ export function LoginPage() {
               )}
             </label>
             <PasswordInput register={register} error={errors.password?.message} />
-            <div className="flex items-center justify-between text-xs">
-              <label className="flex items-center gap-2">
-                <input type="checkbox" defaultChecked className="accent-mina" />
-                Se souvenir de moi
-              </label>
+            <div className="flex items-center justify-end text-xs">
               <Link to="/forgot-password" className="font-bold text-mina">
                 Mot de passe oublié ?
               </Link>
@@ -125,7 +138,6 @@ export function LoginPage() {
               Commencer gratuitement
             </Link>
           </p>
-          <DemoAccounts onSelect={(email) => go(quickLogin(email))} />
         </div>
       </div>
       <AuthVisual />
