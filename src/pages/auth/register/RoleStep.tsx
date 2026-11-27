@@ -23,18 +23,18 @@ const DEFAULT_ROLES: {
     title: "Étudiant",
     subtitle: "Médecine, pharmacie, odontologie ou filière santé",
   },
-  {
-    id: "ambassador",
-    icon: HeartHandshake,
-    title: "Ambassadeur",
-    subtitle: "Étudiant relais formé à l’écoute",
-  },
-  {
-    id: "partner",
-    icon: Building2,
-    title: "Partenaire",
-    subtitle: "Université, CROUS, ONG ou institution",
-  },
+  // {
+  //   id: "ambassador",
+  //   icon: HeartHandshake,
+  //   title: "Ambassadeur",
+  //   subtitle: "Étudiant relais formé à l’écoute",
+  // },
+  // {
+  //   id: "partner",
+  //   icon: Building2,
+  //   title: "Partenaire",
+  //   subtitle: "Université, CROUS, ONG ou institution",
+  // },
 ];
 
 export function RoleStep({

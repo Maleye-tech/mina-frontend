@@ -3,25 +3,25 @@ import react from "@vitejs/plugin-react";
 import tailwindcss from "@tailwindcss/vite";
 import { VitePWA } from "vite-plugin-pwa";
 import path from "node:path";
-import { parseArgs } from "node:util";
 
 const apiTarget =
   process.env.VITE_API_PROXY_TARGET || "https://mina-backend-j03f.onrender.com";
-const { values: viteArgs } = parseArgs({
-  args: process.argv.slice(2),
-  options: { port: { type: "string", short: "p" } },
-  allowPositionals: true,
-  strict: false,
-});
-const cachePort =
-  typeof viteArgs.port === "string" && /^\d+$/.test(viteArgs.port) ? viteArgs.port : "5173";
 
 // Vite config — https://vitejs.dev/config/
 export default defineConfig({
   base: "/",
-  // Un cache distinct par port évite que deux serveurs chargent deux copies de React.
-  cacheDir: path.resolve(__dirname, `node_modules/.vite-${cachePort}`),
   plugins: [
+    {
+      name: "mina:isolate-dev-cache",
+      configResolved(config) {
+        if (config.command === "serve") {
+          // Un cache distinct par port évite que deux serveurs chargent deux copies de React.
+          Object.assign(config, {
+            cacheDir: path.resolve(__dirname, `node_modules/.vite-${config.server.port}`),
+          });
+        }
+      },
+    },
     react(),
     tailwindcss(),
     VitePWA({
