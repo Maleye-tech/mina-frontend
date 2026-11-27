@@ -12,7 +12,7 @@ export default function App() {
       if (!user) return;
       clearSession();
       const path = router.state.location.pathname;
-      if (path.startsWith("/app")) {
+      if (/^\/(app|pro|espace)(?:\/|$)/.test(path)) {
         void router.navigate(`/login?redirect=${encodeURIComponent(path)}`);
       }
     });

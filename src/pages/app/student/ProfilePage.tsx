@@ -1,10 +1,11 @@
 import { useEffect, useState, type FormEvent } from "react";
 import { useNavigate } from "react-router";
-import { AlertTriangle, BadgeCheck, MailCheck, Save, Trash2 } from "lucide-react";
+import { AlertTriangle, BadgeCheck, Download, MailCheck, Save, Trash2 } from "lucide-react";
 import { Button, Card } from "../../../components/ui/Primitives";
 import { PageHeader } from "../../../components/dashboard/Common";
 import { ApiError } from "../../../lib/api";
 import { authService } from "../../../services/authService";
+import { privacyService } from "../../../services/privacyService";
 import { useAuthStore } from "../../../store/authStore";
 import { toast } from "../../../store/toastStore";
 
@@ -45,6 +46,26 @@ export function ProfilePage() {
   const [deleting, setDeleting] = useState(false);
 
   const [resending, setResending] = useState(false);
+  const [exporting, setExporting] = useState(false);
+
+  const handleExportData = async () => {
+    setExporting(true);
+    try {
+      const data = await privacyService.exportData();
+      const blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `mina_donnees_${user.name.replace(/\s+/g, "_")}.json`;
+      a.click();
+      URL.revokeObjectURL(url);
+      toast.success("Vos données ont été exportées avec succès.");
+    } catch (err) {
+      toast.error(errorMessage(err));
+    } finally {
+      setExporting(false);
+    }
+  };
 
   useEffect(() => {
     setPseudonym(user.pseudonym ?? "");
@@ -324,6 +345,27 @@ export function ProfilePage() {
                 </p>
               </div>
             </form>
+          </Card>
+
+          <Card>
+            <h2 className="flex items-center gap-2 font-extrabold text-slate-800 dark:text-slate-100">
+              <Download size={17} className="text-mina" />
+              Confidentialité & Données personnelles (RGPD)
+            </h2>
+            <p className="mt-2 text-xs leading-5 text-slate-500">
+              Télécharge une copie complète de tes données Mina au format JSON (historique d'apprentissage, résultats QCM, rendez-vous et préférences).
+            </p>
+            <div className="mt-4">
+              <Button
+                variant="secondary"
+                size="sm"
+                onClick={() => void handleExportData()}
+                disabled={exporting}
+              >
+                <Download size={14} className="mr-1.5" />
+                {exporting ? "Exportation en cours…" : "Exporter mes données"}
+              </Button>
+            </div>
           </Card>
 
           <Card className="border-red-200 dark:border-red-400/20">

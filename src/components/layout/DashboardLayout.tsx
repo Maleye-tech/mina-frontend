@@ -106,15 +106,36 @@ const navByRole: Record<Role, { label: string; path: string; icon: keyof typeof 
     { label: "Alertes", path: "/app/professional/alertes", icon: "alerts" },
     { label: "Webinaires", path: "/app/professional/webinaires", icon: "webinars" },
   ],
+  partner: [
+    { label: "Vue d’ensemble", path: "/app/partner", icon: "home" },
+    { label: "Codes & Licences", path: "/app/partner/licences", icon: "licenses" },
+    { label: "Bien-être agrégé", path: "/app/partner/bien-etre", icon: "care" },
+    { label: "Événements", path: "/app/partner/evenements", icon: "calendar" },
+    { label: "Rapports", path: "/app/partner/rapports", icon: "reports" },
+    { label: "Convention", path: "/app/partner/convention", icon: "convention" },
+  ],
   partner_admin: [
     { label: "Vue d’ensemble", path: "/app/partner", icon: "home" },
-    { label: "Licences", path: "/app/partner/licences", icon: "licenses" },
+    { label: "Codes & Licences", path: "/app/partner/licences", icon: "licenses" },
     { label: "Bien-être agrégé", path: "/app/partner/bien-etre", icon: "care" },
     { label: "Événements", path: "/app/partner/evenements", icon: "calendar" },
     { label: "Rapports", path: "/app/partner/rapports", icon: "reports" },
     { label: "Convention", path: "/app/partner/convention", icon: "convention" },
   ],
   super_admin: [
+    { label: "Vue globale", path: "/app/admin", icon: "home" },
+    { label: "Utilisateurs", path: "/app/admin/utilisateurs", icon: "users" },
+    { label: "Validations", path: "/app/admin/validations", icon: "validations" },
+    { label: "Contenus", path: "/app/admin/contenus", icon: "content" },
+    { label: "Banque QCM", path: "/app/admin/questions-qcm", icon: "qcm" },
+    { label: "Imports QCM", path: "/app/admin/imports-qcm", icon: "imports" },
+    { label: "Paiements", path: "/app/admin/paiements", icon: "payments" },
+    { label: "Partenaires", path: "/app/admin/partenaires", icon: "partners" },
+    { label: "Modération", path: "/app/admin/moderation", icon: "moderation" },
+    { label: "Journaux", path: "/app/admin/journaux", icon: "logs" },
+    { label: "Paramètres", path: "/app/admin/parametres", icon: "settings" },
+  ],
+  admin: [
     { label: "Vue globale", path: "/app/admin", icon: "home" },
     { label: "Utilisateurs", path: "/app/admin/utilisateurs", icon: "users" },
     { label: "Validations", path: "/app/admin/validations", icon: "validations" },
@@ -138,7 +159,7 @@ export function DashboardLayout() {
   const online = useOnlineStatus();
   const location = useLocation();
   const navigate = useNavigate();
-  const nav = navByRole[user.role];
+  const nav = navByRole[user.role] ?? navByRole.student;
   useEffect(() => {
     document.documentElement.classList.toggle("dark", dark);
   }, [dark]);

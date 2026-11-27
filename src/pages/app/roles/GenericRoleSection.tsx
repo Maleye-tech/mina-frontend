@@ -19,8 +19,8 @@ type NonStudentRole = Exclude<Role, "student">;
 const PRIORITY_SLUGS = ["validations", "consultations", "demandes", "alertes"];
 
 function roleEyebrow(role: NonStudentRole) {
-  if (role === "super_admin") return "Administration Mina";
-  if (role === "partner_admin") return "CROUS Thiès";
+  if (role === "super_admin" || role === "admin") return "Administration Mina";
+  if (role === "partner_admin" || role === "partner") return "Espace Partenaire Institutionnel";
   return "Espace professionnel";
 }
 

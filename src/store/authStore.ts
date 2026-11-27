@@ -1,16 +1,10 @@
 import { create } from "zustand";
-import { persist } from "zustand/middleware";
 import { ApiError } from "../lib/api";
 import { clearToken, getToken, setToken } from "../lib/tokenStore";
-import { authService, type LoginResult } from "../services/authService";
+import { authService, type LoginResult, type RegisterPayload } from "../services/authService";
 import type { User } from "../types";
 
-export type RegisterInput = {
-  name: string;
-  email: string;
-  password: string;
-  passwordConfirmation: string;
-};
+export type RegisterInput = RegisterPayload;
 
 type AuthState = {
   user: User | null;
@@ -28,104 +22,97 @@ type AuthState = {
   clearSession: () => void;
 };
 
-export const useAuthStore = create<AuthState>()(
-  persist(
-    (set, get) => ({
-      user: null,
-      hydrated: false,
-      challengeToken: null,
-      challengeRequiresSetup: false,
+export const useAuthStore = create<AuthState>((set, get) => ({
+  user: null,
+  hydrated: false,
+  challengeToken: null,
+  challengeRequiresSetup: false,
 
-      initialize: async () => {
-        if (get().hydrated) return;
-        const token = getToken();
-        if (!token) {
-          set({ user: null, hydrated: true });
-          return;
-        }
-        try {
-          const user = await authService.me();
-          set({ user, hydrated: true });
-        } catch {
-          clearToken();
-          set({ user: null, hydrated: true });
-        }
-      },
+  initialize: async () => {
+    if (get().hydrated) return;
+    localStorage.removeItem("mina-session");
+    const token = getToken();
+    if (!token) {
+      set({ user: null, hydrated: true });
+      return;
+    }
+    try {
+      const user = await authService.me();
+      set({ user, hydrated: true });
+    } catch {
+      clearToken();
+      set({ user: null, hydrated: true });
+    }
+  },
 
-      login: async (email, password) => {
-        const result = await authService.login(email, password);
-        if (result.type === "authenticated") {
-          setToken(result.token);
-          set({
-            user: result.user,
-            challengeToken: null,
-            challengeRequiresSetup: false,
-          });
-        } else {
-          set({
-            challengeToken: result.challengeToken,
-            challengeRequiresSetup: result.requiresTwoFactorSetup,
-          });
-        }
-        return result;
-      },
+  login: async (email, password) => {
+    const result = await authService.login(email, password);
+    if (result.type === "authenticated") {
+      setToken(result.token);
+      set({
+        user: result.user,
+        challengeToken: null,
+        challengeRequiresSetup: false,
+      });
+    } else {
+      set({
+        challengeToken: result.challengeToken,
+        challengeRequiresSetup: result.requiresTwoFactorSetup,
+      });
+    }
+    return result;
+  },
 
-      register: async (input) => {
-        const res = await authService.register(input);
-        setToken(res.token);
-        set({ user: res.user });
-        return res.user;
-      },
+  register: async (input) => {
+    const res = await authService.register(input);
+    setToken(res.token);
+    set({ user: res.user });
+    return res.user;
+  },
 
-      completeTwoFactor: async (code) => {
-        const { challengeToken, challengeRequiresSetup } = get();
-        if (!challengeToken) {
-          throw new ApiError(400, "Session de vérification expirée. reconnecte-toi.");
-        }
-        const token = challengeRequiresSetup
-          ? await authService.twoFactorConfirmSetup(challengeToken, code)
-          : await authService.twoFactorChallenge(challengeToken, code);
-        setToken(token);
-        const user = await authService.me();
-        set({ user, challengeToken: null, challengeRequiresSetup: false });
-        return user;
-      },
+  completeTwoFactor: async (code) => {
+    const { challengeToken, challengeRequiresSetup } = get();
+    if (!challengeToken) {
+      throw new ApiError(400, "Session de vérification expirée. reconnecte-toi.");
+    }
+    const token = challengeRequiresSetup
+      ? await authService.twoFactorConfirmSetup(challengeToken, code)
+      : await authService.twoFactorChallenge(challengeToken, code);
+    setToken(token);
+    const user = await authService.me();
+    set({ user, challengeToken: null, challengeRequiresSetup: false });
+    return user;
+  },
 
-      logout: async () => {
-        try {
-          await authService.logout();
-        } catch {
-          // la session locale est purgée même si l'API échoue
-        }
-        clearToken();
-        set({ user: null, challengeToken: null, challengeRequiresSetup: false });
-      },
+  logout: async () => {
+    try {
+      await authService.logout();
+    } catch {
+      // la session locale est purgée même si l'API échoue
+    }
+    clearToken();
+    set({ user: null, challengeToken: null, challengeRequiresSetup: false });
+  },
 
-      logoutAll: async () => {
-        try {
-          await authService.logoutAll();
-        } catch {
-          // la session locale est purgée même si l'API échoue
-        }
-        clearToken();
-        set({ user: null, challengeToken: null, challengeRequiresSetup: false });
-      },
+  logoutAll: async () => {
+    try {
+      await authService.logoutAll();
+    } catch {
+      // la session locale est purgée même si l'API échoue
+    }
+    clearToken();
+    set({ user: null, challengeToken: null, challengeRequiresSetup: false });
+  },
 
-      refreshMe: async () => {
-        const user = await authService.me();
-        set({ user });
-      },
+  refreshMe: async () => {
+    const user = await authService.me();
+    set({ user });
+  },
 
-      setUser: (user) => set({ user }),
+  setUser: (user) => set({ user }),
 
-      clearSession: () => {
-        clearToken();
-        set({ user: null, challengeToken: null, challengeRequiresSetup: false });
-      },
-    }),
-    {
-      name: "mina-session",
-      partialize: (state) => ({ user: state.user }),
-    },
-  ),
-);
+  clearSession: () => {
+    clearToken();
+    set({ user: null, challengeToken: null, challengeRequiresSetup: false });
+  },
+}));

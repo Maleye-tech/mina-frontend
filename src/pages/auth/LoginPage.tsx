@@ -63,16 +63,17 @@ export function LoginPage() {
   } = useForm<LoginForm>({
     resolver: zodResolver(loginSchema),
   });
+  const redirect = new URLSearchParams(location.search).get("redirect");
+  const safeRedirect = redirect && /^\/(app|pro|espace)(?:\/|$)/.test(redirect) ? redirect : null;
   const go = (user: User) => {
-    const redirect = new URLSearchParams(location.search).get("redirect");
-    navigate(redirect?.startsWith("/app") ? redirect : roleMeta[user.role].home);
+    navigate(safeRedirect ?? (roleMeta[user.role]?.home ?? "/app/student"));
   };
   const submit = async (data: LoginForm) => {
     setServerError("");
     try {
       const result = await login(data.email, data.password);
       if (result.type === "two_factor") {
-        navigate("/two-factor");
+        navigate("/two-factor", { state: { redirect: safeRedirect } });
         return;
       }
       go(result.user);

@@ -4,11 +4,13 @@ import { LoaderCircle } from "lucide-react";
 export function Button({
   children,
   variant = "primary",
+  size = "md",
   loading,
   className = "",
   ...props
 }: ButtonHTMLAttributes<HTMLButtonElement> & {
   variant?: "primary" | "secondary" | "ghost" | "care";
+  size?: "sm" | "md" | "lg";
   loading?: boolean;
 }) {
   const styles = {
@@ -18,9 +20,14 @@ export function Button({
     ghost: "text-slate-600 hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-white/8",
     care: "bg-care text-white hover:bg-care-dark shadow-[0_8px_22px_rgba(124,111,219,.2)]",
   };
+  const sizeStyles = {
+    sm: "min-h-9 px-3.5 py-1.5 text-xs",
+    md: "min-h-11 px-5 text-sm",
+    lg: "min-h-12 px-6 text-base",
+  };
   return (
     <button
-      className={`inline-flex min-h-11 items-center justify-center gap-2 rounded-xl px-5 text-sm font-bold transition-all focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-mina disabled:opacity-60 ${styles[variant]} ${className}`}
+      className={`inline-flex items-center justify-center gap-2 rounded-xl font-bold transition-all focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-mina disabled:opacity-60 ${styles[variant]} ${sizeStyles[size]} ${className}`}
       {...props}
     >
       {loading && <LoaderCircle size={16} className="animate-spin" />}

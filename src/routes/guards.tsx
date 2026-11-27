@@ -5,7 +5,12 @@ import { useAuthStore } from "../store/authStore";
 import type { Role } from "../types";
 
 const ONBOARDING_PATH = "/app/student/onboarding";
-const STUDENT_EXCEPTIONS = [ONBOARDING_PATH, "/app/student/profil"];
+const STUDENT_EXCEPTIONS = [
+  ONBOARDING_PATH,
+  "/app/student/profil",
+  "/espace/consentement",
+  "/espace/anonymat",
+];
 
 export function HydratingScreen() {
   return (
@@ -24,6 +29,7 @@ export function ProtectedRoute() {
     return <Navigate to={`/login?redirect=${encodeURIComponent(location.pathname)}`} replace />;
   if (
     user.role === "student" &&
+    location.pathname.startsWith("/app/student") &&
     !user.studentProfile?.onboardingCompleted &&
     !STUDENT_EXCEPTIONS.some((path) => location.pathname.startsWith(path))
   )
@@ -31,9 +37,20 @@ export function ProtectedRoute() {
   return <Outlet />;
 }
 
-export function RoleGuard({ role }: { role: Role }) {
+export function RoleGuard({ role }: { role: Role | Role[] }) {
   const user = useAuthStore((s) => s.user);
   if (!user) return null;
-  if (user.role !== role) return <Navigate to={roleMeta[user.role].home} replace />;
+  const roles = Array.isArray(role) ? role : [role];
+  const isMatch =
+    roles.includes(user.role) ||
+    (roles.includes("partner_admin") && (user.role === "partner" || user.role === "partner_admin")) ||
+    (roles.includes("partner") && (user.role === "partner" || user.role === "partner_admin")) ||
+    (roles.includes("super_admin") && (user.role === "admin" || user.role === "super_admin")) ||
+    (roles.includes("admin") && (user.role === "admin" || user.role === "super_admin"));
+
+  if (!isMatch) {
+    const fallbackHome = roleMeta[user.role]?.home ?? "/app/student";
+    return <Navigate to={fallbackHome} replace />;
+  }
   return <Outlet />;
 }

@@ -76,4 +76,49 @@ export const roleTitles: Record<Exclude<Role, "student">, Record<string, [string
       "Configure les questions du profil étudiant posées lors de la première connexion.",
     ],
   },
+  partner: {
+    "": [
+      "Pilotage partenaire",
+      "Mesure l’engagement sans jamais suivre un étudiant individuellement.",
+    ],
+    licences: ["Codes d’accès & Licences", "Génère et gère les codes d'accès subventionnés pour tes étudiants."],
+    "bien-etre": [
+      "Bien-être agrégé",
+      "Comprends les tendances collectives, sans données individuelles.",
+    ],
+    evenements: ["Événements", "Anime la prévention et la réussite sur le campus."],
+    rapports: ["Rapports institutionnels", "Exporte les résultats agrégés de ton programme."],
+    convention: ["Suivi de convention", "Retrouve les jalons et documents de ton partenariat."],
+  },
+  admin: {
+    "": ["Vue globale Mina", "Pilote la croissance, la qualité et la sécurité de la plateforme."],
+    utilisateurs: ["Gestion des utilisateurs", "Recherche, filtre et administre les comptes."],
+    validations: [
+      "Validations en attente",
+      "Vérifie les professionnels, ambassadeurs et partenaires.",
+    ],
+    contenus: [
+      "Gestion des contenus",
+      "Administre les cours, fiches, résumés et podcasts de la bibliothèque.",
+    ],
+    "imports-qcm": [
+      "Imports de questions QCM",
+      "Importe des banques de questions depuis un fichier CSV et suis leur traitement.",
+    ],
+    "questions-qcm": [
+      "Banque de questions QCM",
+      "Parcours et inspecte les questions publiées, leur niveau et leurs options.",
+    ],
+    paiements: [
+      "Abonnements & paiements",
+      "Suis les revenus et les transactions de la plateforme.",
+    ],
+    partenaires: ["Partenaires & conventions", "Déploie Mina auprès des institutions."],
+    moderation: ["Modération", "Traite les signalements avec une traçabilité stricte."],
+    journaux: ["Journaux d’activité", "Surveille les opérations sensibles de la plateforme."],
+    parametres: [
+      "Questions d’onboarding",
+      "Configure les questions du profil étudiant posées lors de la première connexion.",
+    ],
+  },
 };

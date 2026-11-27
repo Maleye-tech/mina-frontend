@@ -145,6 +145,7 @@ export type ClinicalCaseAttempt = {
   clinical_case?: ClinicalCaseAttemptCase | null;
   total_steps?: number;
   steps?: ClinicalCaseStep[];
+  current_step?: number;
   remaining_steps?: number;
   created_at: string;
   completed_at: string | null;

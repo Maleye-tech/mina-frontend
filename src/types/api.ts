@@ -1,4 +1,6 @@
-export type ApiRole = "student" | "ambassador" | "professional" | "admin";
+import type { RoleProfile } from "./index";
+
+export type ApiRole = "student" | "ambassador" | "professional" | "partner" | "admin";
 
 export type ApiConsent = {
   granted: boolean;
@@ -35,6 +37,7 @@ export type ApiProfile = {
     personal_data: ApiConsent;
     mental_health_data: ApiConsent;
   };
+  role_profile?: RoleProfile | null;
   student_profile: ApiStudentProfile | null;
 };
 
@@ -93,10 +96,27 @@ export type University = {
   faculties: Faculty[];
 };
 
+export type AvailableRole = {
+  id: "student" | "ambassador" | "partner";
+  title: string;
+  subtitle: string;
+  icon: string;
+};
+
+export type PartnerInstitution = {
+  id: number;
+  name: string;
+  type?: string;
+  code?: string;
+};
+
 export type OnboardingData = {
-  questions: OnboardingQuestion[];
-  universities: University[];
-  student_profile: ApiStudentProfile | null;
+  available_roles?: AvailableRole[];
+  questions?: OnboardingQuestion[];
+  universities?: University[];
+  partner_institutions?: PartnerInstitution[];
+  current_role?: string;
+  student_profile?: ApiStudentProfile | null;
 };
 
 export type TwoFactorSetup = {

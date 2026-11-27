@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Link, useNavigate } from "react-router";
+import { Link, useLocation, useNavigate } from "react-router";
 import { ArrowLeft, Copy, KeyRound, ShieldCheck } from "lucide-react";
 import { Logo } from "../../components/ui/Logo";
 import { Button } from "../../components/ui/Primitives";
@@ -11,6 +11,8 @@ import type { TwoFactorSetup } from "../../types/api";
 
 export function TwoFactorPage() {
   const navigate = useNavigate();
+  const location = useLocation();
+  const redirect = (location.state as { redirect?: string } | null)?.redirect;
   const challengeToken = useAuthStore((s) => s.challengeToken);
   const challengeRequiresSetup = useAuthStore((s) => s.challengeRequiresSetup);
   const completeTwoFactor = useAuthStore((s) => s.completeTwoFactor);
@@ -50,7 +52,11 @@ export function TwoFactorPage() {
     setSubmitting(true);
     try {
       const user = await completeTwoFactor(code);
-      navigate(roleMeta[user.role].home, { replace: true });
+      const safeRedirect =
+        redirect && /^\/(app|pro|espace)(?:\/|$)/.test(redirect)
+          ? redirect
+          : roleMeta[user.role].home;
+      navigate(safeRedirect, { replace: true });
     } catch (e) {
       setError(e instanceof ApiError ? e.message : (e as Error).message);
       setCode("");

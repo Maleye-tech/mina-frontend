@@ -19,6 +19,7 @@ export function mapProfile(profile: ApiProfile): User {
     email: profile.email,
     role: mapRole(profile.role),
     roleLabel: profile.role_label,
+    roleProfile: profile.role_profile ?? null,
     status: profile.email_verified ? "active" : "pending",
     emailVerified: profile.email_verified,
     pseudonym: profile.pseudonym,
@@ -55,9 +56,28 @@ export function mapProfile(profile: ApiProfile): User {
           onboardingCompleted: profile.student_profile.onboarding_completed,
         }
       : null,
-    university: profile.student_profile?.university ?? undefined,
+    university:
+      profile.student_profile?.university ??
+      (profile.role_profile && "university" in profile.role_profile
+        ? (profile.role_profile.university as string)
+        : undefined),
   };
 }
+
+export type RegisterPayload = {
+  name: string;
+  email: string;
+  password: string;
+  passwordConfirmation: string;
+  role?: "student" | "ambassador" | "partner";
+  pseudonym?: string;
+  university_id?: number | null;
+  faculty_id?: number | null;
+  study_field?: string | null;
+  education_level?: string | null;
+  partner_institution_id?: number | null;
+  partner_position?: string | null;
+};
 
 export type LoginResult =
   | { type: "authenticated"; user: User; token: string }
@@ -79,21 +99,26 @@ type MessageResponse = { message: string };
 type UserResponse = { message: string; user: ApiProfile };
 
 export const authService = {
-  async register(input: {
-    name: string;
-    email: string;
-    password: string;
-    passwordConfirmation: string;
-  }): Promise<{ message: string; user: User; token: string }> {
+  async register(input: RegisterPayload): Promise<{ message: string; user: User; token: string }> {
+    const body: Record<string, unknown> = {
+      name: input.name,
+      email: input.email,
+      password: input.password,
+      password_confirmation: input.passwordConfirmation,
+    };
+    if (input.role) body.role = input.role;
+    if (input.pseudonym) body.pseudonym = input.pseudonym;
+    if (input.university_id) body.university_id = input.university_id;
+    if (input.faculty_id) body.faculty_id = input.faculty_id;
+    if (input.study_field) body.study_field = input.study_field;
+    if (input.education_level) body.education_level = input.education_level;
+    if (input.partner_institution_id) body.partner_institution_id = input.partner_institution_id;
+    if (input.partner_position) body.partner_position = input.partner_position;
+
     const res = await request<RegisterResponse>("/auth/register", {
       method: "POST",
       token: null,
-      body: {
-        name: input.name,
-        email: input.email,
-        password: input.password,
-        password_confirmation: input.passwordConfirmation,
-      },
+      body,
     });
     return { message: res.message, user: mapProfile(res.user), token: res.token };
   },
